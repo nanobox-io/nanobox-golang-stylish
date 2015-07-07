@@ -140,28 +140,16 @@ func SubTaskFail() {
 func Bullet(v interface{}) {
   switch t := v.(type) {
 
-  // if it's a collection, iterate over each value printing them individually...
+  // if it's a slice of strings, iterate over each one printing them individually...
   case []string:
     for i := range t {
       fmt.Printf("+> %v\n", t[i])
     }
 
-  // otherwise print the value
+  // otherwise just print the value
   default:
     fmt.Printf("+> %v\n", v)
   }
-  // switch reflect.TypeOf(v).Kind() {
-
-  // // if it's a collection, iterate over each value printing them individually...
-  // case reflect.Slice, reflect.Array:
-  //   for i := range v {
-  //     fmt.Printf("+> %v\n", i)
-  //   }
-
-  // // otherwise print the value
-  // default:
-  //   fmt.Printf("+> %v\n", v)
-  // }
 }
 
 // Warning styles and prints a message as outlined at:
@@ -180,17 +168,17 @@ func Warning(body string) {
 `, wordwrap.WrapString(body, 70))
 }
 
-// Fatal styles and prints a message as outlined at:
+// Error styles and prints a message as outlined at:
 // http://nanodocs.gopagoda.io/engines/style-guide#fatal_errors
 //
 // Usage:
-// Fatal "nuclear launch detected", "All your base are belong to me"
+// Error "nuclear launch detected", "All your base are belong to me"
 //
 // Output:
 // ! NUCLEAR LAUNCH DETECTED !
 //
 // All your base are belong to me
-func Fatal(heading, body string) {
+func Error(heading, body string) {
   fmt.Printf(`
 ! %v !
 
