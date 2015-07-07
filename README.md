@@ -78,7 +78,7 @@ stylish.SubTask("i am a failed sub task")
 stylish.SubTaskFail()
 
 // outputs
-::::::::: I AM A SUCCESSFUL SUB TASK
+::::::::: I AM A FAILED SUB TASK
 // subtask output
 <<<<<<<<< [!] FAILED
 ```
