@@ -9,7 +9,6 @@ package stylish
 
 import (
   "fmt"
-  // "reflect"
   "strings"
 
   "github.com/mitchellh/go-wordwrap"
@@ -23,10 +22,10 @@ import (
 //
 // Output:
 // :::::::::::::::::::::::::: I AM A HEADER :::::::::::::::::::::::::
-func Header(header string) {
+func Header(header string) string {
 
   maxLen := 70
-  subLen := len(fmt.Sprintf(" %v ", header))
+  subLen := len(fmt.Sprintf("%v", header))
 
   leftLen := (maxLen - subLen)/2 + (maxLen - subLen)%2
   rightLen := (maxLen - subLen)/2
@@ -34,11 +33,9 @@ func Header(header string) {
   // print the header, inserting a ':' (colon) 'n' times, where 'n' is the number
   // remaining after subtracting subLen (number of 'reserved' characters) from
   // maxLen (maximum number of allowed characters)
-  output := fmt.Sprintf("%v %v %v", strings.Repeat(":", leftLen), strings.ToUpper(header), strings.Repeat(":", rightLen))
-
-  fmt.Printf(`
+  return fmt.Sprintf(`
 %v
-`, output)
+`, fmt.Sprintf("%v %v %v", strings.Repeat(":", leftLen), strings.ToUpper(header), strings.Repeat(":", rightLen)))
 }
 
 // ProcessStart styles and prints a 'child process' as outlined at:
@@ -49,19 +46,17 @@ func Header(header string) {
 //
 // Output:
 // I AM A PROCESS :::::::::::::::::::::::::::::::::::::::::::::::: =>
-func ProcessStart(process string) {
+func ProcessStart(process string) string {
 
   maxLen := 70
-  subLen := len(fmt.Sprintf("%v  =>", process))
+  subLen := len(fmt.Sprintf("%v=>", process))
 
   // print the process, inserting a ':' (colon) 'n' times, where 'n' is the number
   // remaining after subtracting subLen (number of 'reserved' characters) from
   // maxLen (maximum number of allowed characters)
-  output := fmt.Sprintf("%v %v =>", strings.ToUpper(process), strings.Repeat(":", (maxLen-subLen)))
-
-  fmt.Printf(`
+  return fmt.Sprintf(`
 %v
-`, output)
+`, fmt.Sprintf("%v %v =>", strings.ToUpper(process), strings.Repeat(":", (maxLen-subLen))))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
@@ -72,19 +67,17 @@ func ProcessStart(process string) {
 //
 // Output:
 // <= :::::::::::::::::::::::::::::::::::::::::::: END I AM A PROCESS
-func ProcessEnd(process string) {
+func ProcessEnd(process string) string {
 
   maxLen := 70
-  subLen := len(fmt.Sprintf("<=  END %v", process))
+  subLen := len(fmt.Sprintf("<=%v[√]", process))
 
   // print the process, inserting a ':' (colon) 'n' times, where 'n' is the number
   // remaining after subtracting subLen (number of 'reserved' characters) from
   // maxLen (maximum number of allowed characters)
-  output := fmt.Sprintf("<= %v END %v", strings.Repeat(":", (maxLen-subLen)), strings.ToUpper(process))
-
-  fmt.Printf(`
+  return fmt.Sprintf(`
 %v
-`, output)
+`, fmt.Sprintf("<= %v %v [√]", strings.Repeat(":", (maxLen-subLen)), strings.ToUpper(process)))
 }
 
 // SubTask styles and prints a 'sub task' as outlined at:
@@ -95,8 +88,8 @@ func ProcessEnd(process string) {
 //
 // Output:
 // ::::::::: I AM A SUB TASK
-func SubTaskStart(task string) {
-  fmt.Printf(`
+func SubTask(task string) string {
+  return fmt.Sprintf(`
 ::::::::: %v
 `, strings.ToUpper(task))
 }
@@ -108,8 +101,8 @@ func SubTaskStart(task string) {
 //
 // Output:
 // <<<<<<<<< [√] SUCCESS
-func SubTaskSuccess() {
-  fmt.Printf("\n<<<<<<<<< [√] SUCCESS\n")
+func SubTaskSuccess() string {
+  return fmt.Sprintf("\n<<<<<<<<< [√] SUCCESS\n")
 }
 
 // SubTaskFail styles and prints a footer to a failed subtask
@@ -119,8 +112,8 @@ func SubTaskSuccess() {
 //
 // Output:
 // <<<<<<<<< [!] FAILED
-func SubTaskFail() {
-  fmt.Printf("\n<<<<<<<<< [!] FAILED\n")
+func SubTaskFail() string {
+  return fmt.Sprintf("\n<<<<<<<<< [!] FAILED\n")
 }
 
 // Bullet styles and prints a message as outlined at:
@@ -137,19 +130,18 @@ func SubTaskFail() {
 // +> are
 // +> many
 // +> bullets
-func Bullet(v interface{}) {
-  switch t := v.(type) {
+func Bullet(v interface{}) string {
 
   // if it's a slice of strings, iterate over each one printing them individually...
+  switch t := v.(type) {
   case []string:
     for i := range t {
-      fmt.Printf("+> %v\n", t[i])
+      return fmt.Sprintf("+> %v\n", t[i])
     }
+  }
 
   // otherwise just print the value
-  default:
-    fmt.Printf("+> %v\n", v)
-  }
+  return fmt.Sprintf("+> %v\n", v)
 }
 
 // Warning styles and prints a message as outlined at:
@@ -161,8 +153,8 @@ func Bullet(v interface{}) {
 // Output:
 // -----------------------------  WARNING  -----------------------------
 // You just bought Hot Pockets!
-func Warning(body string) {
-  fmt.Printf(`
+func Warning(body string) string {
+  return fmt.Sprintf(`
 -----------------------------  WARNING  -----------------------------
 %v
 `, wordwrap.WrapString(body, 70))
@@ -172,14 +164,14 @@ func Warning(body string) {
 // http://nanodocs.gopagoda.io/engines/style-guide#fatal_errors
 //
 // Usage:
-// Error "nuclear launch detected", "All your base are belong to me"
+// Error "nuclear launch detected", "All your base are belong to us"
 //
 // Output:
 // ! NUCLEAR LAUNCH DETECTED !
 //
-// All your base are belong to me
-func Error(heading, body string) {
-  fmt.Printf(`
+// All your base are belong to us
+func Error(heading, body string) string {
+  return fmt.Sprintf(`
 ! %v !
 
 %v
