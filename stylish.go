@@ -8,10 +8,10 @@
 package stylish
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 
-  "github.com/mitchellh/go-wordwrap"
+	"github.com/mitchellh/go-wordwrap"
 )
 
 // Header styles and prints a header as outlined at:
@@ -22,20 +22,20 @@ import (
 //
 // Output:
 // :::::::::::::::::::::::::: I AM A HEADER :::::::::::::::::::::::::
-func Header(header string) string {
+func Header(msg string) string {
 
-  maxLen := 70
-  subLen := len(fmt.Sprintf("%v", header))
+	maxLen := 70
+	subLen := len(fmt.Sprintf("%v", msg))
 
-  leftLen := (maxLen - subLen)/2 + (maxLen - subLen)%2
-  rightLen := (maxLen - subLen)/2
+	leftLen := (maxLen-subLen)/2 + (maxLen-subLen)%2
+	rightLen := (maxLen - subLen) / 2
 
-  // print the header, inserting a ':' (colon) 'n' times, where 'n' is the number
-  // remaining after subtracting subLen (number of 'reserved' characters) from
-  // maxLen (maximum number of allowed characters)
-  return fmt.Sprintf(`
+	// print msg, inserting a ':' (colon) 'n' times, where 'n' is the number
+	// remaining after subtracting subLen (number of 'reserved' characters) from
+	// maxLen (maximum number of allowed characters)
+	return fmt.Sprintf(`
 %v
-`, fmt.Sprintf("%v %v %v", strings.Repeat(":", leftLen), strings.ToUpper(header), strings.Repeat(":", rightLen)))
+`, fmt.Sprintf("%v %v %v", strings.Repeat(":", leftLen), strings.ToUpper(msg), strings.Repeat(":", rightLen)))
 }
 
 // ProcessStart styles and prints a 'child process' as outlined at:
@@ -45,39 +45,30 @@ func Header(header string) string {
 // ProcessStart "i am a process"
 //
 // Output:
-// I AM A PROCESS :::::::::::::::::::::::::::::::::::::::::::::::: =>
-func ProcessStart(process string) string {
+// I AM A PROCESS -------------------------------------------------->
+func ProcessStart(msg string) string {
 
-  maxLen := 70
-  subLen := len(fmt.Sprintf("%v=>", process))
+	maxLen := 70
+	subLen := len(fmt.Sprintf("%v->", msg))
 
-  // print the process, inserting a ':' (colon) 'n' times, where 'n' is the number
-  // remaining after subtracting subLen (number of 'reserved' characters) from
-  // maxLen (maximum number of allowed characters)
-  return fmt.Sprintf(`
+	// print msg, inserting a '-' (colon) 'n' times, where 'n' is the number
+	// remaining after subtracting subLen (number of 'reserved' characters) from
+	// maxLen (maximum number of allowed characters)
+	return fmt.Sprintf(`
 %v
-`, fmt.Sprintf("%v %v =>", strings.ToUpper(process), strings.Repeat(":", (maxLen-subLen))))
+`, fmt.Sprintf("%v %v->", strings.ToUpper(msg), strings.Repeat("-", (maxLen-subLen))))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
 // http://nanodocs.gopagoda.io/engines/style-guide#child-process
 //
 // Usage:
-// ProcessEnd "i am a process"
+// ProcessEnd
 //
 // Output:
-// <= :::::::::::::::::::::::::::::::::::::::::::: END I AM A PROCESS
-func ProcessEnd(process string) string {
-
-  maxLen := 70
-  subLen := len(fmt.Sprintf("<=%v[√]", process))
-
-  // print the process, inserting a ':' (colon) 'n' times, where 'n' is the number
-  // remaining after subtracting subLen (number of 'reserved' characters) from
-  // maxLen (maximum number of allowed characters)
-  return fmt.Sprintf(`
-%v
-`, fmt.Sprintf("<= %v %v [√]", strings.Repeat(":", (maxLen-subLen)), strings.ToUpper(process)))
+// <new line>
+func ProcessEnd() string {
+	return fmt.Sprintf("\n")
 }
 
 // SubTask styles and prints a 'sub task' as outlined at:
@@ -87,11 +78,18 @@ func ProcessEnd(process string) string {
 // SubTask "i am a sub task"
 //
 // Output:
-// ::::::::: I AM A SUB TASK
-func SubTask(task string) string {
-  return fmt.Sprintf(`
-::::::::: %v
-`, strings.ToUpper(task))
+// I AM A SUB TASK ----------------------->
+func SubTaskStart(msg string) string {
+
+	maxLen := 40
+	subLen := len(fmt.Sprintf("%v->", msg))
+
+	// print msg, inserting a ':' (colon) 'n' times, where 'n' is the number
+	// remaining after subtracting subLen (number of 'reserved' characters) from
+	// maxLen (maximum number of allowed characters)
+	return fmt.Sprintf(`
+%v
+`, fmt.Sprintf("%v %v->", strings.ToUpper(msg), strings.Repeat("-", (maxLen-subLen))))
 }
 
 // SubTaskSuccess styles and prints a footer to a successful subtask
@@ -100,9 +98,9 @@ func SubTask(task string) string {
 // SubTaskSuccess
 //
 // Output:
-// <<<<<<<<< [√] SUCCESS
-func SubTaskSuccess() string {
-  return fmt.Sprintf("\n<<<<<<<<< [√] SUCCESS\n")
+//    [√] SUCCESS
+func Success() string {
+	return fmt.Sprintf("   [√] SUCCESS\n")
 }
 
 // SubTaskFail styles and prints a footer to a failed subtask
@@ -111,9 +109,9 @@ func SubTaskSuccess() string {
 // SubTaskFail
 //
 // Output:
-// <<<<<<<<< [!] FAILED
-func SubTaskFail() string {
-  return fmt.Sprintf("\n<<<<<<<<< [!] FAILED\n")
+//    [!] FAILED
+func Fail() string {
+	return fmt.Sprintf("   [!] FAILED\n")
 }
 
 // Bullet styles and prints a message as outlined at:
@@ -121,27 +119,23 @@ func SubTaskFail() string {
 //
 // Usage:
 // Bullet "i am a bullet"
-// Bullet []string{"we", "are", "many", "bullets"}
 //
 // Output:
 // +> i am a bullet
+func Bullet(msg string) string {
+	return fmt.Sprintf("+> %v\n", msg)
+}
+
+// SubBullet styles and prints a message as outlined at:
+// http://nanodocs.gopagoda.io/engines/style-guide#bullet-points
 //
-// +> we
-// +> are
-// +> many
-// +> bullets
-func Bullet(v interface{}) string {
-
-  // if it's a slice of strings, iterate over each one printing them individually...
-  switch t := v.(type) {
-  case []string:
-    for i := range t {
-      return fmt.Sprintf("+> %v\n", t[i])
-    }
-  }
-
-  // otherwise just print the value
-  return fmt.Sprintf("+> %v\n", v)
+// Usage:
+// SubBullet "i am a sub bullet"
+//
+// Output:
+//    i am a sub bullet
+func SubBullet(msg string) string {
+	return fmt.Sprintf("   %v\n", msg)
 }
 
 // Warning styles and prints a message as outlined at:
@@ -154,7 +148,7 @@ func Bullet(v interface{}) string {
 // -----------------------------  WARNING  -----------------------------
 // You just bought Hot Pockets!
 func Warning(body string) string {
-  return fmt.Sprintf(`
+	return fmt.Sprintf(`
 -----------------------------  WARNING  -----------------------------
 %v
 `, wordwrap.WrapString(body, 70))
@@ -171,7 +165,7 @@ func Warning(body string) string {
 //
 // All your base are belong to us
 func Error(heading, body string) string {
-  return fmt.Sprintf(`
+	return fmt.Sprintf(`
 ! %v !
 
 %v
