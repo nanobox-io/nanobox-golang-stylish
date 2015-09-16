@@ -141,7 +141,7 @@ func Marker(mark, msg string, v ...interface{}) string {
 // Output:
 // +> i am a bullet
 func Bullet(msg string, v ...interface{}) string {
-	return Marker("+>", msg, v)
+	return Marker("+>", fmt.Sprintf(msg, v...))
 }
 
 // ErrBullet is a Bullet to be used for quick inline failure messsages
@@ -152,7 +152,7 @@ func Bullet(msg string, v ...interface{}) string {
 // Output:
 // -> i am an errBullet
 func ErrBullet(msg string, v ...interface{}) string {
-	return Marker("->", msg, v)
+	return Marker("->", fmt.Sprintf(msg, v...))
 }
 
 // SubBullet styles and prints a message as outlined at:
@@ -164,7 +164,7 @@ func ErrBullet(msg string, v ...interface{}) string {
 // Output:
 //    i am a sub bullet
 func SubBullet(msg string, v ...interface{}) string {
-	return Marker("  ", msg, v)
+	return Marker("  ", fmt.Sprintf(msg, v...))
 }
 
 // Warning styles and prints a message as outlined at:
