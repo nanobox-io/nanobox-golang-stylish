@@ -49,7 +49,7 @@ func NestedProcessStart(msg string, level int) string {
 	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
 	// remaining after subtracting subLen (number of 'reserved' characters) from
 	// maxLen (maximum number of allowed characters)
-	return fmt.Sprintf("%s\n", fmt.Sprintf("%s+ %s %s >", GenerateNestedPrefix(level) process, strings.Repeat("-", (maxLen-subLen))))
+	return fmt.Sprintf("%s\n", fmt.Sprintf("%s+ %s %s >", GenerateNestedPrefix(level), process, strings.Repeat("-", (maxLen-subLen))))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
