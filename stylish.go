@@ -38,7 +38,7 @@ func ProcessStart(msg string, v ...interface{}) string {
 // NestedProcessStart styles and prints a 'child process' as outlined at:
 // http://nanodocs.gopagoda.io/engines/style-guide#child-process
 // with a nested prefix according to the level specified
-func NestedProcessStart(msg string, level int) string {
+func NestedProcessStart(msg string, level int, v ...interface{}) string {
 	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), ProcessStart(msg))
 
 	maxLen := 80 - level
