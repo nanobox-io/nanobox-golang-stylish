@@ -40,6 +40,16 @@ func ProcessStart(msg string, v ...interface{}) string {
 // with a nested prefix according to the level specified
 func NestedProcessStart(msg string, level int) string {
 	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), ProcessStart(msg))
+
+	maxLen := 80 - level
+	subLen := len(fmt.Sprintf("+ %s%s >", fmt.Sprintf(msg, v...)))
+
+	process := fmt.Sprintf(msg, v...)
+
+	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
+	// remaining after subtracting subLen (number of 'reserved' characters) from
+	// maxLen (maximum number of allowed characters)
+	return fmt.Sprintf("%s\n", fmt.Sprintf("%s+ %s %s >", GenerateNestedPrefix(level) process, strings.Repeat("-", (maxLen-subLen))))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
