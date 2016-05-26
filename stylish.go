@@ -14,6 +14,14 @@ import (
 	"github.com/mitchellh/go-wordwrap"
 )
 
+
+// Nest is a generic nesting function that 
+// will generate the appropariate prefix based
+// on the nest level
+func Nest(level int, msg string) string {
+	return fmt.Sprintf("%s%s\n", GenerateNestedPrefix(level), shortenProgress(level, msg))
+}
+
 // ProcessStart styles and prints a 'child process' as outlined at:
 // http://nanodocs.gopagoda.io/engines/style-guide#child-process
 //
@@ -25,31 +33,13 @@ import (
 func ProcessStart(msg string, v ...interface{}) string {
 
 	maxLen := 80
-	subLen := len(fmt.Sprintf("+ %s%s >", fmt.Sprintf(msg, v...)))
-
 	process := fmt.Sprintf(msg, v...)
+	subLen := len(process) + len("+   >\n")
 
 	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
 	// remaining after subtracting subLen (number of 'reserved' characters) from
 	// maxLen (maximum number of allowed characters)
-	return fmt.Sprintf("%s\n", fmt.Sprintf("+ %s %s >", process, strings.Repeat("-", (maxLen-subLen))))
-}
-
-// NestedProcessStart styles and prints a 'child process' as outlined at:
-// http://nanodocs.gopagoda.io/engines/style-guide#child-process
-// with a nested prefix according to the level specified
-func NestedProcessStart(msg string, level int, v ...interface{}) string {
-	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), ProcessStart(msg))
-
-	maxLen := 80 - level
-	subLen := len(fmt.Sprintf("+ %s%s >", fmt.Sprintf(msg, v...)))
-
-	process := fmt.Sprintf(msg, v...)
-
-	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
-	// remaining after subtracting subLen (number of 'reserved' characters) from
-	// maxLen (maximum number of allowed characters)
-	return fmt.Sprintf("%s\n", fmt.Sprintf("%s+ %s %s >", GenerateNestedPrefix(level), process, strings.Repeat("-", (maxLen-subLen))))
+	return fmt.Sprintf("+ %s %s >\n", process, strings.Repeat("-", (maxLen-subLen)))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
@@ -86,13 +76,6 @@ func Marker(mark, msg string, v ...interface{}) string {
 // + i am a bullet
 func Bullet(msg string, v ...interface{}) string {
 	return Marker("+", fmt.Sprintf(msg, v...))
-}
-
-// NestedBullet styles and prints a message as outlined at:
-// http://nanodocs.gopagoda.io/engines/style-guide#bullet-points
-// with a nested prefix according to the level specified
-func NestedBullet(msg string, level int) string {
-	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), Bullet(msg))
 }
 
 // SubBullet styles and prints a message as outlined at:
@@ -171,4 +154,12 @@ func GenerateNestedPrefix(level int) string {
 	}
 
 	return prefix
+}
+
+func shortenProgress(level int, msg string) string {
+	suffix := fmt.Sprintf("%s >\n", strings.Repeat("-", (level * 2)))
+	if len(msg) == 80 && strings.HasSuffix(msg, suffix) {
+		return strings.Replace(msg, suffix, " >\n", 1)
+	}
+	return msg
 }
