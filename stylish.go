@@ -14,6 +14,22 @@ import (
 	"github.com/mitchellh/go-wordwrap"
 )
 
+
+// Nest is a generic nesting function that 
+// will generate the appropariate prefix based
+// on the nest level
+func Nest(level int, msg string) (rtn string) {
+	for index, line := range strings.Split(msg, "\n") {
+		// skip the last new line at the end of the message
+		// because we add the new line in on each Sprintf
+		if index == len(strings.Split(msg, "\n")) - 1 && line == "" {
+			continue
+		}
+		rtn += fmt.Sprintf("%s%s\n", GenerateNestedPrefix(level), shorten(level, line))
+	}
+	return
+}
+
 // ProcessStart styles and prints a 'child process' as outlined at:
 // http://nanodocs.gopagoda.io/engines/style-guide#child-process
 //
@@ -25,31 +41,13 @@ import (
 func ProcessStart(msg string, v ...interface{}) string {
 
 	maxLen := 80
-	subLen := len(fmt.Sprintf("+ %s%s >", fmt.Sprintf(msg, v...)))
-
 	process := fmt.Sprintf(msg, v...)
+	subLen := len(process) + len("+   >")
 
 	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
 	// remaining after subtracting subLen (number of 'reserved' characters) from
 	// maxLen (maximum number of allowed characters)
-	return fmt.Sprintf("%s\n", fmt.Sprintf("+ %s %s >", process, strings.Repeat("-", (maxLen-subLen))))
-}
-
-// NestedProcessStart styles and prints a 'child process' as outlined at:
-// http://nanodocs.gopagoda.io/engines/style-guide#child-process
-// with a nested prefix according to the level specified
-func NestedProcessStart(msg string, level int, v ...interface{}) string {
-	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), ProcessStart(msg))
-
-	maxLen := 80 - level
-	subLen := len(fmt.Sprintf("+ %s%s >", fmt.Sprintf(msg, v...)))
-
-	process := fmt.Sprintf(msg, v...)
-
-	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
-	// remaining after subtracting subLen (number of 'reserved' characters) from
-	// maxLen (maximum number of allowed characters)
-	return fmt.Sprintf("%s\n", fmt.Sprintf("%s+ %s %s >", GenerateNestedPrefix(level), process, strings.Repeat("-", (maxLen-subLen))))
+	return fmt.Sprintf("+ %s %s >\n", process, strings.Repeat("-", (maxLen-subLen)))
 }
 
 // ProcessEnd styles and prints a 'child process' as outlined at:
@@ -86,13 +84,6 @@ func Marker(mark, msg string, v ...interface{}) string {
 // + i am a bullet
 func Bullet(msg string, v ...interface{}) string {
 	return Marker("+", fmt.Sprintf(msg, v...))
-}
-
-// NestedBullet styles and prints a message as outlined at:
-// http://nanodocs.gopagoda.io/engines/style-guide#bullet-points
-// with a nested prefix according to the level specified
-func NestedBullet(msg string, level int) string {
-	return fmt.Sprintf("%s%s", GenerateNestedPrefix(level), Bullet(msg))
 }
 
 // SubBullet styles and prints a message as outlined at:
@@ -144,7 +135,7 @@ func ErrorHead(heading string, v ...interface{}) string {
 // Output:
 // All your base are belong to us
 func ErrorBody(body string, v ...interface{}) string {
-	return fmt.Sprintf("%s\n", wordwrap.WrapString(fmt.Sprintf(body, v...), 80))
+	return fmt.Sprintf("%s\n", wordwrap.WrapString(fmt.Sprintf(body, v...), 70))
 }
 
 // Error styles and prints a message as outlined at:
@@ -171,4 +162,32 @@ func GenerateNestedPrefix(level int) string {
 	}
 
 	return prefix
+}
+
+func shorten(level int, msg string) string {
+	switch {
+	case isProgress(msg):
+		return shortenProgress(level, msg)
+	case isWarning(msg):
+		return shortenWarning(level, msg)
+	}
+	return msg
+}
+
+func isProgress(line string) bool {
+	return len(line) == 80 && strings.HasSuffix(line, "-- >")
+}
+
+func shortenProgress(level int, msg string) string {
+	suffix := fmt.Sprintf("%s >", strings.Repeat("-", (level * 2)))
+	return strings.Replace(msg, suffix, " >", 1)
+}
+
+func isWarning(line string) bool {
+	return line == "----------------------------------  WARNING  ----------------------------------"
+}
+
+func shortenWarning(level int, msg string) string {
+	wrapper := strings.Repeat("-", level)
+	return strings.Replace(msg, fmt.Sprintf("%s  WARNING  %s", wrapper, wrapper), "  WARNING  ", 1)
 }
