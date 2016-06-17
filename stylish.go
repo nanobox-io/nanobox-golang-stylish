@@ -14,15 +14,14 @@ import (
 	"github.com/mitchellh/go-wordwrap"
 )
 
-
-// Nest is a generic nesting function that 
+// Nest is a generic nesting function that
 // will generate the appropariate prefix based
 // on the nest level
 func Nest(level int, msg string) (rtn string) {
 	for index, line := range strings.Split(msg, "\n") {
 		// skip the last new line at the end of the message
 		// because we add the new line in on each Sprintf
-		if index == len(strings.Split(msg, "\n")) - 1 && line == "" {
+		if index == len(strings.Split(msg, "\n"))-1 && line == "" {
 			continue
 		}
 		rtn += fmt.Sprintf("%s%s\n", GenerateNestedPrefix(level), shorten(level, line))
@@ -121,9 +120,15 @@ func Warning(body string, v ...interface{}) string {
 // ErrorHead "nuclear launch detected"
 //
 // Output:
-// ! NUCLEAR LAUNCH DETECTED !
+// ::::::::::::: NUCLEAR LAUNCH DETECTED!!!
 func ErrorHead(heading string, v ...interface{}) string {
-	return fmt.Sprintf("\n! %s !\n", strings.ToUpper(fmt.Sprintf(heading, v...)))
+	maxLen := 40
+	subLen := len(heading)
+
+	// print process, inserting a '-' (colon) 'n' times, where 'n' is the number
+	// remaining after subtracting subLen (number of 'reserved' characters) from
+	// maxLen (maximum number of allowed characters)
+	return fmt.Sprintf("\n%s %s!!!\n", strings.Repeat(":", (maxLen-subLen)), strings.ToUpper(fmt.Sprintf(heading, v...)))
 }
 
 // ErrorBody styles and prints an error body as outlined at:
@@ -135,7 +140,19 @@ func ErrorHead(heading string, v ...interface{}) string {
 // Output:
 // All your base are belong to us
 func ErrorBody(body string, v ...interface{}) string {
-	return fmt.Sprintf("%s\n", wordwrap.WrapString(fmt.Sprintf(body, v...), 70))
+	return fmt.Sprintf("%s\n", wordwrap.WrapString(fmt.Sprintf(body, v...), 40))
+}
+
+// ErrorFoot styles and prints an error body as outlined at:
+// http://nanodocs.gopagoda.io/engines/style-guide#fatal_errors
+//
+// Usage:
+// ErrorFoot())
+//
+// Output:
+// ::::::::::::::::::::::::::::::::::::::::
+func ErrorFoot() string {
+	return fmt.Sprintf("%s\n", strings.Repeat(":", 40))
 }
 
 // Error styles and prints a message as outlined at:
@@ -145,11 +162,13 @@ func ErrorBody(body string, v ...interface{}) string {
 // Error "nuclear launch detected", "All your base are belong to us"
 //
 // Output:
-// ! NUCLEAR LAUNCH DETECTED !
+// ::::::::::::: NUCLEAR LAUNCH DETECTED!!!
 //
 // All your base are belong to us
+//
+// ::::::::::::::::::::::::::::::::::::::::
 func Error(heading, body string) string {
-	return fmt.Sprintf("%s%s", ErrorHead(heading), ErrorBody(body))
+	return fmt.Sprintf("%s%s%s", ErrorHead(heading), ErrorBody(body), ErrorFoot())
 }
 
 // GenerateNestedPrefix will generate a prefix string of spaces to match the
@@ -179,7 +198,7 @@ func isProgress(line string) bool {
 }
 
 func shortenProgress(level int, msg string) string {
-	suffix := fmt.Sprintf("%s >", strings.Repeat("-", (level * 2)))
+	suffix := fmt.Sprintf("%s >", strings.Repeat("-", (level*2)))
 	return strings.Replace(msg, suffix, " >", 1)
 }
 

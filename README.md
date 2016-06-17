@@ -76,9 +76,11 @@ i am a warning
 stylish.Error("i am an error", "things are probably going to explode now")
 
 // outputs
-! I AM AN ERROR !
+:::::::::::::::::::::: I AM AN ERROR!!!
 
 things are probably going to explode now
+
+:::::::::::::::::::::::::::::::::::::::
 ```
 
 ### Documentation
